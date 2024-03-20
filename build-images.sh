@@ -10,6 +10,7 @@ BASE_IMG=${REGISTRY}/runner:${TAG}
 BUILDAH_IMG=${REGISTRY}/buildah-runner:${TAG}
 K8S_TOOLS_IMG=${REGISTRY}/k8s-tools-runner:${TAG}
 JAVA_BUILD_11_IMG=${REGISTRY}/java-build-11-runner:${TAG}
+NODEJS_IMG=${REGISTRY}/nodejs-runner:${TAG}
 
 echo "Base img tag $BASE_IMG"
 
@@ -33,6 +34,11 @@ if enabled "$*" k8s; then
     docker build -f ./k8s-tools/Containerfile -t $K8S_TOOLS_IMG ./k8s-tools
 fi
 
+if enabled "$*" node; then
+    echo "Building nodejs image..."
+    docker build -f ./node/Containerfile -t $NODEJS_IMG ./node
+fi
+
 if enabled "$*" java-build-11; then
     echo "Building java-build-11 image..."
     docker build -f ./java-build-11/Containerfile -t $JAVA_BUILD_11_IMG ./java-build-11
@@ -48,6 +54,9 @@ if enabled "$*" push; then
     if enabled "$*" k8s; then
         docker push $K8S_TOOLS_IMG
     fi
+    if enabled "$*" node; then
+        docker push $NODEJS_IMG
+    fi
     if enabled "$*" java-build-11; then
         docker push $JAVA_BUILD_11_IMG
     fi
@@ -61,6 +70,9 @@ if enabled "$*" buildah; then
 fi
 if enabled "$*" k8s; then
     echo "$K8S_TOOLS_IMG"
+fi
+if enabled "$*" node; then
+    echo "$NODEJS_IMG"
 fi
 if enabled "$*" java-build-11; then
     echo "$JAVA_BUILD_11_IMG"
