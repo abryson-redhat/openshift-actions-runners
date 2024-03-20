@@ -35,7 +35,7 @@ fi
 
 if enabled "$*" java-build-11; then
     echo "Building java-build-11 image..."
-    docker build -f ./java-build-11/Containerfile -t $JAVA_BUILD_11_IMG= ./java-build-11
+    docker build -f ./java-build-11/Containerfile -t $JAVA_BUILD_11_IMG ./java-build-11
 fi
 
 if enabled "$*" push; then
