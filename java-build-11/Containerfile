@@ -2,7 +2,10 @@ ARG BASE_IMG=quay.io/redhat-github-actions/runner:latest
 FROM $BASE_IMG AS java-runner
 
 ENV MAVEN_VER="3.8.8" \
-    GRADLE_VER="8.6"
+    GRADLE_VER="8.6" \
+    M2_HOME="/opt/maven" \
+    MAVEN_HOME="${M2_HOME}" \
+    PATH="${PATH}:/${M2_HOME}/bin"
 
 USER root
 
@@ -10,13 +13,14 @@ RUN dnf install -y java-11-openjdk-devel.x86_64 unzip wget && \
     curl -o apache-maven-$MAVEN_VER-bin.tar.gz https://dlcdn.apache.org/maven/maven-3/$MAVEN_VER/binaries/apache-maven-$MAVEN_VER-bin.tar.gz && \
     tar xvzf apache-maven-$MAVEN_VER-bin.tar.gz && \
     mv apache-maven-$MAVEN_VER /opt/maven && \
-    echo "export MAVEN_HOME=/opt/maven" >> /etc/profile.d/maven.sh && echo "export PATH=\$PATH:\$MAVEN_HOME/bin" >> /etc/profile.d/maven.sh && \
+    #echo "export MAVEN_HOME=/opt/maven" >> /etc/profile.d/maven.sh && echo "export PATH=\$PATH:\$MAVEN_HOME/bin" >> /etc/profile.d/maven.sh && \
     wget https://services.gradle.org/distributions/gradle-$GRADLE_VER-bin.zip && \
     unzip gradle-$GRADLE_VER-bin.zip && \
-    mv gradle-$GRADLE_VER /usr/local/gradle && \
-    echo "export PATH=/usr/local/gradle/bin:$PATH" >> /etc/profile.d/gradle.sh
+    mv gradle-$GRADLE_VER /opt/gradle
+    #echo "export PATH=/usr/local/gradle/bin:$PATH" >> /etc/profile.d/gradle.sh
+
+ENV PATH="${PATH}:/${M2_HOME}/bin:/opt/gradle/bin"
 
 USER $UID
 
-RUN source /etc/profile.d/maven.sh && mvn --version && \
-    source /etc/profile.d/gradle.sh && gradle --version
+RUN mvn --version && gradle -v
