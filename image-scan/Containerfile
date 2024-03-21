@@ -1,0 +1,12 @@
+ARG BASE_IMG=quay.io/redhat-github-actions/runner:latest
+FROM $BASE_IMG AS imagescan-runner
+
+USER root
+
+RUN  arch="$(uname -m | sed "s/x86_64//")"; arch="${arch:+-$arch}"; curl -f -o roxctl "https://mirror.openshift.com/pub/rhacs/assets/4.3.5/bin/Linux/roxctl${arch}" && \
+     chmod +x roxctl && \
+     cp -f ./roxctl /usr/local/bin/
+
+USER $UID
+
+RUN roxctl version
