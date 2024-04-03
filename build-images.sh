@@ -11,6 +11,9 @@ BUILDAH_IMG=${REGISTRY}/buildah-runner:${TAG}
 K8S_TOOLS_IMG=${REGISTRY}/k8s-tools-runner:${TAG}
 JAVA_BUILD_11_IMG=${REGISTRY}/java-build-11-runner:${TAG}
 NODEJS_IMG=${REGISTRY}/nodejs-runner:${TAG}
+IMAGE_SCAN_IMG=${REGISTRY}/imagescan-runner:${TAG}
+JAVA_RUNTIME_11_IMG=${REGISTRY}/java-runtime-11-runner:${TAG}
+SONARQUBE_RUNNER_IMG=${REGISTRY}/sonarqube-runner:${TAG}
 
 echo "Base img tag $BASE_IMG"
 
@@ -44,6 +47,20 @@ if enabled "$*" java-build-11; then
     docker build -f ./java-build-11/Containerfile -t $JAVA_BUILD_11_IMG ./java-build-11
 fi
 
+if enabled "$*" java-runtime-11; then
+    echo "Building java-runtime-11 image..."
+    docker build -f ./java/Containerfile -t $JAVA_RUNTIME_11_IMG ./java
+fi
+
+if enabled "$*" imagescan; then
+    echo "Building imagescan image..."
+    docker build -f ./image-scan/Containerfile -t $IMAGE_SCAN_IMG ./image-scan
+fi
+
+if enabled "$*" sonarqube; then
+    echo "Building sonarqube image..."
+    docker build -f ./docker-sonarqube/Containerfile -t $SONARQUBE_RUNNER_IMG ./docker-sonarqube
+fi
 if enabled "$*" push; then
     echo "Pushing..."
     docker push $BASE_IMG
@@ -59,6 +76,15 @@ if enabled "$*" push; then
     fi
     if enabled "$*" java-build-11; then
         docker push $JAVA_BUILD_11_IMG
+    fi
+    if enabled "$*" java-runtime-11; then
+        docker push $JAVA_RUNTIME_11_IMG
+    fi
+    if enabled "$*" imagescan; then
+        docker push $IMAGE_SCAN_IMG
+    fi
+    if enabled "$*" sonarqube; then
+        docker push $SONARQUBE_RUNNER_IMG
     fi
 else
     echo "Not pushing. Pass 'push' to push"
@@ -76,6 +102,15 @@ if enabled "$*" node; then
 fi
 if enabled "$*" java-build-11; then
     echo "$JAVA_BUILD_11_IMG"
+fi
+if enabled "$*" java-runtime-11; then
+    echo "$JAVA_RUNTIME_11_IMG"
+fi
+if enabled "$*" imagescan; then
+    echo "$IMAGE_SCAN_IMG"
+fi
+if enabled "$*" sonarqube; then
+    echo "$SONARQUBE_RUNNER_IMG"
 fi
 
 cd - > /dev/null

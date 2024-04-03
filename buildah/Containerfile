@@ -13,6 +13,11 @@ RUN dnf -y update && \
     dnf -y reinstall shadow-utils && \
     dnf clean all
 
+RUN touch /etc/subgid /etc/subuid \
+ && chmod g=u /etc/subgid /etc/subuid /etc/passwd \
+ && echo runner:10000:65536 > /etc/subuid \
+ && echo runner:10000:65536 > /etc/subgid
+
 ARG OC_VERSION=4.7.4
 RUN curl -sSLf https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/${OC_VERSION}/openshift-client-linux.tar.gz \
     | tar --exclude=README.md -xzvf - &&\
@@ -33,4 +38,6 @@ RUN mkdir -vp /home/${USERNAME}/.config/containers && \
     printf '[storage]\ndriver = "vfs"\n' > /home/${USERNAME}/.config/containers/storage.conf && \
     chown -Rv ${USERNAME} /home/${USERNAME}/.config/
 
-USER $UID
+#USER $UID
+USER runner
+WORKDIR /home/runner
