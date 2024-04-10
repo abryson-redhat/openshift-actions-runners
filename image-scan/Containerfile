@@ -15,5 +15,7 @@ RUN  arch="$(uname -m | sed "s/x86_64//")"; arch="${arch:+-$arch}"; curl -f -o r
 
 USER $UID
 
+COPY ./generate_uuid.py .
+
 RUN roxctl version && \
     jq --version
