@@ -45,7 +45,12 @@ extract() {
     fi
 
     # Return using global var
-    extract_result=$(find $extract_dir -type f -iname "$executable_name*")
+    # special accomodation for newer versions of yq
+    if [[ $executable_name != "yq" ]]; then
+      extract_result=$(find $extract_dir -type f -iname "$executable_name*")
+    else
+      extract_result=$(find $extract_dir -type f -iname "yq_linux*")
+    fi
 
     if [[ -z $extract_result ]]; then
         die "Could not find $executable_name in $extract_dir after extraction"
